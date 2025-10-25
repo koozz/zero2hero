@@ -1,1 +1,3 @@
-# This is a readme file
+# Zero2Hero
+
+See [lowlevel.academy](https://lowlevel.academy)
