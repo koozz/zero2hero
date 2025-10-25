@@ -46,7 +46,7 @@ int main(int argc, char *argv[]) {
   if (filepath == NULL) {
     printf("Error: Database file path is required.\n");
     print_usage(argv);
-    exit(STATUS_ERROR);
+    return -1;
   }
 
   if (newfile) {
