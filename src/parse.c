@@ -22,10 +22,7 @@
 //   return -1;
 // }
 
-int output_file(int fd, struct dbheader_t *dbhdr, struct employee_t *employees) {
-  if (employees == NULL || dbhdr == NULL) {
-    fprintf(stderr, "null values passed.\n");
-  }
+int output_file(int fd, struct dbheader_t *dbhdr /*, struct employee_t *employees*/) {
   if (fd < 0) {
     fprintf(stderr, "Error: Invalid file descriptor.\n");
     return STATUS_ERROR;
@@ -84,10 +81,7 @@ int validate_db_header(int fd, struct dbheader_t **headerOut) {
   return STATUS_SUCCESS;
 }
 
-int create_db_header(int fd, struct dbheader_t **headerOut) {
-  if (fd < 0) {
-    fprintf(stderr, "Invalid file descriptor, but no exercise for this yet.\n");
-  }
+int create_db_header(/*int fd,*/ struct dbheader_t **headerOut) {
   struct dbheader_t *header = calloc(1, sizeof(struct dbheader_t));
   if (header == NULL) {
     perror("calloc");

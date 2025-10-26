@@ -55,7 +55,7 @@ int main(int argc, char *argv[]) {
       printf("Error creating database file.\n");
       return -1;
     }
-    if (create_db_header(dbfh, &dbhdr) == STATUS_ERROR) {
+    if (create_db_header(/*dbfh,*/ &dbhdr) == STATUS_ERROR) {
       printf("Error creating database header.\n");
       return -1;
     }
@@ -71,7 +71,7 @@ int main(int argc, char *argv[]) {
     }
   }
 
-  output_file(dbfh, dbhdr, NULL);
+  output_file(dbfh, dbhdr/*, NULL*/);
   close(dbfh);
   return 0;
 }
