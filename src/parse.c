@@ -85,6 +85,9 @@ int validate_db_header(int fd, struct dbheader_t **headerOut) {
 }
 
 int create_db_header(int fd, struct dbheader_t **headerOut) {
+  if (fd < 0) {
+    fprintf(stderr, "Invalid file descriptor, but no exercise for this yet.\n");
+  }
   struct dbheader_t *header = calloc(1, sizeof(struct dbheader_t));
   if (header == NULL) {
     perror("calloc");
