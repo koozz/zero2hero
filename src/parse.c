@@ -10,17 +10,17 @@
 #include "common.h"
 #include "parse.h"
 
-void list_employees(struct dbheader_t *dbhdr, struct employee_t *employees) {
-  return;
-}
-
-int add_employee(struct dbheader_t *dbhdr, struct employee_t *employees, char *addstring) {
-  return -1;
-}
-
-int read_employees(int fd, struct dbheader_t *dbhdr, struct employee_t **employeesOut) {
-  return -1;
-}
+// void list_employees(struct dbheader_t *dbhdr, struct employee_t *employees) {
+//   return;
+// }
+//
+// int add_employee(struct dbheader_t *dbhdr, struct employee_t *employees, char *addstring) {
+//   return -1;
+// }
+//
+// int read_employees(int fd, struct dbheader_t *dbhdr, struct employee_t **employeesOut) {
+//   return -1;
+// }
 
 int output_file(int fd, struct dbheader_t *dbhdr, struct employee_t *employees) {
   if (fd < 0) {
