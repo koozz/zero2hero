@@ -10,27 +10,75 @@
 #include "common.h"
 #include "parse.h"
 
-// void list_employees(struct dbheader_t *dbhdr, struct employee_t *employees) {
-//   return;
-// }
-//
-// int add_employee(struct dbheader_t *dbhdr, struct employee_t *employees, char *addstring) {
-//   return -1;
-// }
-//
-// int read_employees(int fd, struct dbheader_t *dbhdr, struct employee_t **employeesOut) {
-//   return -1;
-// }
+void list_employees(struct dbheader_t *dbhdr, struct employee_t *employees) {
+  return;
+}
+
+int add_employee(struct dbheader_t *dbhdr, struct employee_t **employees, char *addstring) {
+  if (NULL == dbhdr) return STATUS_ERROR;
+  if (NULL == employees) return STATUS_ERROR;
+  if (NULL == *employees) return STATUS_ERROR;
+  if (NULL == addstring) return STATUS_ERROR;
+
+  char *name = strtok(addstring, ",");
+  if (NULL == name) return STATUS_ERROR;
+  char *address = strtok(NULL, ",");
+  if (NULL == address) return STATUS_ERROR;
+  char *hoursStr = strtok(NULL, ",");
+  if (NULL == hoursStr) return STATUS_ERROR;
+
+  struct employee_t *e = *employees;
+  e = realloc(e, (dbhdr->count + 1) * sizeof(struct employee_t));
+  if (e == NULL) {
+    perror("realloc");
+    return STATUS_ERROR;
+  }
+
+  dbhdr->count++;
+
+  strncpy(e[dbhdr->count-1].name, name, sizeof(e[dbhdr->count-1].name) - 1);
+  strncpy(e[dbhdr->count-1].address, address, sizeof(e[dbhdr->count-1].address) - 1);
+  e[dbhdr->count-1].hours = atoi(hoursStr);
+
+  *employees = e;
+  return STATUS_SUCCESS;
+}
+
+int read_employees(int fd, struct dbheader_t *dbhdr, struct employee_t **employeesOut) {
+  if (fd < 0) {
+    fprintf(stderr, "Error: Invalid file descriptor.\n");
+    return STATUS_ERROR;
+  }
+
+  int count = dbhdr->count;
+
+  struct employee_t *employees = calloc(count, sizeof(struct employee_t));
+  if (employees == NULL) {
+    perror("calloc");
+    return STATUS_ERROR;
+  }
+
+  read(fd, employees, count * sizeof(struct employee_t));
+  int i = 0;
+  for (i = 0; i < count; i++) {
+    employees[i].hours = ntohl(employees[i].hours);
+  }
+
+  *employeesOut = employees;
+  return STATUS_SUCCESS;
+}
 
 int output_file(int fd, struct dbheader_t *dbhdr, struct employee_t *employees) {
   if (fd < 0) {
     fprintf(stderr, "Error: Invalid file descriptor.\n");
     return STATUS_ERROR;
   }
+  int employee_count = dbhdr->count;
+
   dbhdr->magic = htonl(dbhdr->magic);
   dbhdr->version = htons(dbhdr->version);
   dbhdr->count = htons(dbhdr->count);
-  dbhdr->filesize = htonl(dbhdr->filesize);
+  dbhdr->filesize = htonl(dbhdr->filesize) + employee_count * sizeof(struct employee_t);
   if (lseek(fd, 0, SEEK_SET) == -1) {
     perror("lseek");
     return STATUS_ERROR;
@@ -38,6 +86,11 @@ int output_file(int fd, struct dbheader_t *dbhdr, struct employee_t *employees) 
   if (write(fd, dbhdr, sizeof(struct dbheader_t)) != sizeof(struct dbheader_t)) {
     perror("write");
     return STATUS_ERROR;
+  }
+  int i = 0;
+  for (i = 0; i < employee_count; i++) {
+    employees[i].hours = htonl(employees[i].hours);
+    write(fd, &employees[i], sizeof(struct employee_t));
   }
   return STATUS_SUCCESS;
 }

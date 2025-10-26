@@ -17,13 +17,15 @@ void print_usage(char *argv[]) {
 int main(int argc, char *argv[]) {
   bool newfile = false;
   char *filepath = NULL;
+  char *addstring = NULL;
 
   int dbfh = -1;
   struct dbheader_t *dbhdr = NULL;
+  struct employee_t *employees = NULL;
 
   int c = 0;
 
-  while ((c = getopt(argc, argv, "nf:")) != -1) {
+  while ((c = getopt(argc, argv, "nf:a:")) != -1) {
     switch(c) {
       case 'n':
         newfile = true;
@@ -31,6 +33,10 @@ int main(int argc, char *argv[]) {
 
       case 'f':
         filepath = optarg;
+        break;
+
+      case 'a':
+        addstring = optarg;
         break;
 
       case '?':
@@ -71,7 +77,18 @@ int main(int argc, char *argv[]) {
     }
   }
 
-  output_file(dbfh, dbhdr, NULL);
+  if (read_employees(dbfh, dbhdr, &employees) != STATUS_SUCCESS) {
+    printf("Error reading employees from database file.\n");
+    return -1;
+  }
+  if (addstring != NULL) {
+    if (add_employee(dbhdr, &employees, addstring) != STATUS_SUCCESS) {
+      printf("Error adding employee to database file.\n");
+      return -1;
+    }
+  }
+
+  output_file(dbfh, dbhdr, employees);
   close(dbfh);
   return 0;
 }
