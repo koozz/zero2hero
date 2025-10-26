@@ -11,15 +11,15 @@
 #include "parse.h"
 
 void list_employees(struct dbheader_t *dbhdr, struct employee_t *employees) {
-
+  return;
 }
 
 int add_employee(struct dbheader_t *dbhdr, struct employee_t *employees, char *addstring) {
-
+  return -1;
 }
 
 int read_employees(int fd, struct dbheader_t *dbhdr, struct employee_t **employeesOut) {
-
+  return -1;
 }
 
 int output_file(int fd, struct dbheader_t *dbhdr, struct employee_t *employees) {
@@ -48,7 +48,7 @@ int validate_db_header(int fd, struct dbheader_t **headerOut) {
     return STATUS_ERROR;
   }
   struct dbheader_t *header = calloc(1, sizeof(struct dbheader_t));
-  if (header == -1) {
+  if (header == NULL) {
     perror("calloc");
     return STATUS_ERROR;
   }
@@ -83,7 +83,7 @@ int validate_db_header(int fd, struct dbheader_t **headerOut) {
 
 int create_db_header(int fd, struct dbheader_t **headerOut) {
   struct dbheader_t *header = calloc(1, sizeof(struct dbheader_t));
-  if (header == -1) {
+  if (header == NULL) {
     perror("calloc");
     return STATUS_ERROR;
   }
@@ -96,5 +96,3 @@ int create_db_header(int fd, struct dbheader_t **headerOut) {
 
   return STATUS_SUCCESS;
 }
-
-

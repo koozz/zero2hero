@@ -1,2 +1,0 @@
-CompileFlags:
-  Add: [-Iinclude, --include=include/*.h, -Wall]
