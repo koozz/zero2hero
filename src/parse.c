@@ -1,3 +1,4 @@
+#include <stdbool.h>
 #include <stdio.h>
 #include <unistd.h>
 #include <stdlib.h>
@@ -11,7 +12,71 @@
 #include "parse.h"
 
 void list_employees(struct dbheader_t *dbhdr, struct employee_t *employees) {
+  int i = 0;
+  for (; i < dbhdr->count; i++) {
+    printf("Employee %d:\n", i + 1);
+    printf("  Name: %s\n", employees[i].name);
+    printf("  Address: %s\n", employees[i].address);
+    printf("  Hours: %u\n", employees[i].hours);
+  }
   return;
+}
+
+int update_employee(struct dbheader_t *dbhdr, struct employee_t **employees, char *updatestring) {
+  if (NULL == dbhdr) return STATUS_ERROR;
+  if (NULL == employees) return STATUS_ERROR;
+  if (NULL == *employees) return STATUS_ERROR;
+  if (NULL == updatestring) return STATUS_ERROR;
+
+  char *name = strtok(updatestring, ",");
+  if (NULL == name) return STATUS_ERROR;
+  char *address = strtok(NULL, ",");
+  if (NULL == address) return STATUS_ERROR;
+  char *hoursStr = strtok(NULL, ",");
+  if (NULL == hoursStr) return STATUS_ERROR;
+
+  int i = 0;
+  for (; i < dbhdr->count; i++) {
+    if (strcmp((*employees)[i].name, name) == 0) {
+      strncpy((*employees)[i].address, address, sizeof((*employees)[i].address) - 1);
+      (*employees)[i].hours = atoi(hoursStr);
+      break;
+    }
+  }
+
+  return STATUS_SUCCESS;
+}
+
+int remove_employee(struct dbheader_t *dbhdr, struct employee_t **employees, char *removestring) {
+  if (NULL == dbhdr) return STATUS_ERROR;
+  if (NULL == employees) return STATUS_ERROR;
+  if (NULL == *employees) return STATUS_ERROR;
+  if (NULL == removestring) return STATUS_ERROR;
+
+  char *name = strtok(removestring, ",");
+  if (NULL == name) return STATUS_ERROR;
+
+  bool resized = false;
+  int i = 0;
+  for (; i < dbhdr->count; i++) {
+    if (strcmp((*employees)[i].name, name) == 0) {
+      int j = i;
+      for (; j < dbhdr->count - 1; j++) {
+        (*employees)[j] = (*employees)[j + 1];
+      }
+      dbhdr->count--;
+      resized = true;
+    }
+  }
+  if (resized) {
+    struct employee_t *e = realloc(*employees, dbhdr->count * sizeof(struct employee_t));
+    if (e == NULL && dbhdr->count > 0) {
+      perror("realloc");
+      return STATUS_ERROR;
+    }
+    *employees = e;
+  }
+  return STATUS_SUCCESS;
 }
 
 int add_employee(struct dbheader_t *dbhdr, struct employee_t **employees, char *addstring) {
