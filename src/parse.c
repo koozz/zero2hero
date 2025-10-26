@@ -23,6 +23,9 @@
 // }
 
 int output_file(int fd, struct dbheader_t *dbhdr, struct employee_t *employees) {
+  if (employees == NULL || dbhdr == NULL) {
+    fprintf(stderr, "null values passed.\n");
+  }
   if (fd < 0) {
     fprintf(stderr, "Error: Invalid file descriptor.\n");
     return STATUS_ERROR;
